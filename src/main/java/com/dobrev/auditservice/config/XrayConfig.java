@@ -33,6 +33,6 @@ public class XrayConfig {
 
     @Bean
     public Filter tracingFilter(){
-        return new AWSXRayServletFilter("productsservice");
+        return new AWSXRayServletFilter("auditservice");
     }
 }
