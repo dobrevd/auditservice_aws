@@ -3,36 +3,25 @@ package com.dobrev.auditservice.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.awscore.interceptor.TraceIdExecutionInterceptor;
 import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient;
 import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
+import software.amazon.awssdk.services.sqs.SqsAsyncClient;
 
 @Configuration
-public class DynamoDBConfig {
+public class SqsConfig {
     @Value("${aws.region}")
     private String awsRegion;
 
     @Bean
-    @Primary
-    public DynamoDbAsyncClient dynamoDbAsyncClient(){
-        return DynamoDbAsyncClient.builder()
+    public SqsAsyncClient sqsAsyncClient(){
+        return SqsAsyncClient.builder()
                 .credentialsProvider(DefaultCredentialsProvider.create())
                 .region(Region.of(awsRegion))
                 .overrideConfiguration(ClientOverrideConfiguration.builder()
                         .addExecutionInterceptor(new TraceIdExecutionInterceptor())
                         .build())
-                .build();
-    }
-
-    @Bean
-    @Primary
-    public DynamoDbEnhancedAsyncClient dynamoDbEnhancedAsyncClient() {
-        return DynamoDbEnhancedAsyncClient.builder()
-                .dynamoDbClient(dynamoDbAsyncClient())
                 .build();
     }
 }

@@ -32,6 +32,7 @@ dependencies {
 	implementation platform("software.amazon.awssdk:bom:${awsSdkBomVersion}")
 	implementation 'software.amazon.awssdk:dynamodb'
 	implementation 'software.amazon.awssdk:dynamodb-enhanced'
+	implementation 'software.amazon.awssdk:sqs'
 
 	// AWS X-Ray
 	implementation 'com.amazonaws:aws-xray-recorder-sdk-spring:2.18.2'
