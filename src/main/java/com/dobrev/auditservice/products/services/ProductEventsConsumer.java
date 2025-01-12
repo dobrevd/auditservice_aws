@@ -6,7 +6,7 @@ import com.amazonaws.xray.entities.TraceID;
 import com.dobrev.auditservice.events.dto.ProductEventDto;
 import com.dobrev.auditservice.events.dto.ProductEventType;
 import com.dobrev.auditservice.events.dto.SnsMessageDto;
-import com.dobrev.auditservice.products.repositories.ProductEventRepository;
+import com.dobrev.auditservice.products.repositories.ProductEventsRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -31,12 +31,12 @@ public class ProductEventsConsumer {
     private final SqsAsyncClient sqsAsyncClient;
     private final String productEventsQueueUrl;
     private final ReceiveMessageRequest receiveMessageRequest;
-    private final ProductEventRepository productEventRepository;
+    private final ProductEventsRepository productEventsRepository;
 
     public ProductEventsConsumer(ObjectMapper objectMapper,
                                  SqsAsyncClient sqsAsyncClient,
                                  @Value("${aws.sqs.queue.product.events.url}") String productEventsQueueUrl,
-                                 ProductEventRepository productEventRepository) {
+                                 ProductEventsRepository productEventsRepository) {
 
         this.objectMapper = objectMapper;
         this.sqsAsyncClient = sqsAsyncClient;
@@ -46,7 +46,7 @@ public class ProductEventsConsumer {
                 .maxNumberOfMessages(5)
                 .queueUrl(productEventsQueueUrl)
                 .build();
-        this.productEventRepository = productEventRepository;
+        this.productEventsRepository = productEventsRepository;
     }
 
     @Scheduled(fixedDelay = 1000)
@@ -83,7 +83,7 @@ public class ProductEventsConsumer {
                                 ProductEventDto productEventDto =
                                         objectMapper.readValue(snsMessageDto.message(), ProductEventDto.class);
 
-                                productEventFuture = productEventRepository.create(productEventDto, eventType,
+                                productEventFuture = productEventsRepository.create(productEventDto, eventType,
                                         messageId, requestId, traceId);
 
                                 log.info("Product event: {} - Id: {}", eventType, productEventDto.id());
